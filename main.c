@@ -2,8 +2,7 @@
 
 /**
  * main - entry point to execute all functions.
- * @argc: command argument count.
- * @argv: command argument vector.
+ *
  * Return: 0 on success.
  */
 
@@ -11,13 +10,13 @@ int main(int argc, char **argv)
 {
 	char *command = NULL;
 	bool piped = false;
-	size_t len = 0;
 	(void) argc;
 
 	if (!isatty(STDIN_FILENO))
 	{
 		piped = true;
-		if (getline(&command, &len, stdin) == -1)
+		command = cy_getline();
+		if (!command)
 		{
 			free(command);
 			exit(EXIT_SUCCESS);
@@ -27,7 +26,7 @@ int main(int argc, char **argv)
 	if (piped)
 	{
 		command[strlen(command) - 1] = '\0';
-		tokenizer(command, argv);
+		cy_tokenizer(command, argv);
 		execute(argv);
 		free(command);
 	}
@@ -35,11 +34,12 @@ int main(int argc, char **argv)
 	{
 		while (1 && !piped)
 		{
-			getline_prompt(&command, &len);
+			command = cy_getline();
 
 			if (command != NULL && *command != '\0')
 			{
-				tokenizer(command, argv);
+				cy_tokenizer(command, argv);
+				cy_builtins(argv);
 				execute(argv);
 			}
 			free(command);
