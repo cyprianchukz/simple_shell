@@ -9,7 +9,8 @@ void exec2(char **argv)
 
 	if (_strcmp(argv[0], "/bin/ls") == 0)
 	{
-		if (argv[1] != NULL && _strcmp(argv[1], "-l") == 0 && argv[2] != NULL && _strcmp(argv[2], "/tmp") == 0)
+		if (argv[1] != NULL && _strcmp(argv[1], "-l") == 0 &&
+			argv[2] != NULL && _strcmp(argv[2], "/tmp") == 0)
 		{
 			argv[0] = "/bin/ls";
 			argv[1] = "-l";
@@ -27,7 +28,8 @@ void exec2(char **argv)
 		}
 	}
 
-	if (_strcmp(argv[0], "/bin/ls") == 0 && argv[1] != NULL && _strcmp(argv[1], "-l") == 0 && argv[2] != NULL && _strcmp(argv[2], "/tmp") == 0)
+	if (_strcmp(argv[0], "/bin/ls") == 0 && argv[1] != NULL && _strcmp(argv[1],
+		"-l") == 0 && argv[2] != NULL && _strcmp(argv[2], "/tmp") == 0)
 	{
 		argv[0] = "/bin/ls";
 		argv[1] = "-l";
