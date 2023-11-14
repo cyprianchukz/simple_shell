@@ -9,7 +9,7 @@ char *get_path(char *command)
 {
 	char *dir, *token;
 	char *path = getenv("PATH");
-	char *path_cpy = strdup(path);
+	char *path_cpy = _strdup(path);
 	char *cmd_path = NULL;
 	int len, i;
 
@@ -17,7 +17,7 @@ char *get_path(char *command)
 	while (token != NULL)
 	{
 		dir = token;
-		len = strlen(dir) + strlen(command) + 2;
+		len = _strlen(dir) + _strlen(command) + 2;
 		cmd_path = malloc(len);
 		if (cmd_path == NULL)
 		{
