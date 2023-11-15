@@ -1,1 +1,0 @@
-This simple_shell files was written (and coded) by Cyprian Ikogwe as a solo project.

@@ -1,11 +1,11 @@
-#include "cypee.h"
+#include "shell.h"
 
 /**
  * getline_prompt - a function that prints our prompt
  * and handles user input.
  * @command: inputted command from the stdin.
  * @len: length of the command string.
- * Return: the inputted command on success.
+ * Return: command on success.
  */
 char *getline_prompt(char **command, size_t *len)
 {

@@ -1,10 +1,9 @@
-#include "cypee.h"
+#include "shell.h"
 /**
- * get_path - a function to get the PATH of the command.
- * @command: inputted command from the stdin.
+ * get_path - gets the path of the command environment.
+ * @command: input from the stdin.
  * Return: NULL
  */
-
 char *get_path(char *command)
 {
 	char *dir, *token;
@@ -24,6 +23,8 @@ char *get_path(char *command)
 			perror("malloc");
 			return (NULL);
 		}
+
+		i = 0;
 		cmd_path[i++] = '/';
 
 		while (*command)
@@ -40,6 +41,6 @@ char *get_path(char *command)
 		free(cmd_path);
 		token = strtok(NULL, ":");
 	}
-	free(path_cpy);
+	free(path_cpy), path_cpy = NULL;
 	return (NULL);
 }

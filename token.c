@@ -1,8 +1,7 @@
-#include "cypee.h"
-
+#include "shell.h"
 /**
- * tokenizer - a function to tokenize the command string.
- * @command: command from the stdin or piped.
+ * tokenizer - function to tokenize code.
+ * @command: inputted string.
  * @argv: command argument vector.
  */
 
