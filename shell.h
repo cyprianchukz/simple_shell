@@ -21,6 +21,13 @@ void exec2(char **argv);
 char *get_path(char *command);
 void cy_builtins(char **argv);
 void print_env(void);
+char ***getenviron();
+char **getallenv();
+char *_getenv(char *variable);
+int setallenv(char **envin, char *newval);
+int _setenv(char *variable, char *value);
+int _unsetenv(char *variable);
+
 
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);
