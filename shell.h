@@ -11,6 +11,7 @@
 #include <errno.h>
 
 #define DC_SIZE 1024
+#define MAX_ENV_VARS 100
 
 extern char **environ;
 
@@ -21,13 +22,16 @@ void exec2(char **argv);
 char *get_path(char *command);
 void cy_builtins(char **argv);
 void print_env(void);
-char ***getenviron();
-char **getallenv();
-char *_getenv(char *variable);
+void set_environment();
+char ***getallenv();
 int setallenv(char **envin, char *newval);
+int add_new_value(char **environ, char *newval);
 int _setenv(char *variable, char *value);
 int _unsetenv(char *variable);
-
+char *_strtok(char *str, char *delim);
+char *strtok2(char *str, char *delim, int escflags);
+int _getline(char **command_ptr, int fd);
+int _atoi(char *s);
 
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);

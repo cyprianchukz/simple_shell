@@ -1,126 +1,143 @@
 #include "shell.h"
 
 /**
- * print_env - function to print the environment variable.
+ * set_environment - set the environment variables for the shell.
  */
+void set_environment(void)
+{
+	int i;
+	char **env_copy = malloc(sizeof(char *) * (MAX_ENV_VARS + 1));
 
+	if (env_copy == NULL)
+	{
+		perror("Memory allocation error");
+		exit(EXIT_FAILURE);
+	}
+
+	i = 0;
+
+	while (environ[i] != NULL && i < MAX_ENV_VARS)
+	{
+		env_copy[i] = _strdup(environ[i]);
+		if (env_copy[i] == NULL)
+		{
+			perror("Memory allocation error");
+			exit(EXIT_FAILURE);
+		}
+		i++;
+	}
+	env_copy[i] = NULL;
+
+	if (setallenv(env_copy, NULL) == -1)
+	{
+		perror("Error setting environment variables");
+		exit(EXIT_FAILURE);
+	}
+}
+
+/**
+ * setallenv - to set the environment variables.
+ * @envin: the environment variables.
+ * @newval: new value of the env.
+ * Return: 0 on success.
+ */
+int setallenv(char **envin, char *newval)
+{
+	static char **environ;
+	size_t i, j, len = 0;
+
+	while (envin[len] != NULL)
+	{
+		len++;
+	}
+
+	environ = malloc(sizeof(char *) * (len + 1));
+	if (environ == NULL)
+	{
+		perror("Memory allocation error");
+		return (-1);
+	}
+
+	for (i = 0; i < len; i++)
+	{
+		environ[i] = _strdup(envin[i]);
+		if (environ[i] == NULL)
+		{
+			perror("Memory allocation error");
+			for (j = 0; j < i; j++)
+			{
+				free(environ[j]);
+			}
+			free(environ);
+			return (-1);
+		}
+	}
+	add_new_value(environ, newval);
+	return (0);
+}
+
+/**
+ * add_new_value - adds new value to the setallenv.
+ * @environ: pointer to the environ.
+ * @newval: pointer to the new value.
+ * Return: 0 on success, -1 on failure.
+ */
+int add_new_value(char **environ, char *newval)
+{
+	size_t j, len = 0;
+
+	if (newval != NULL)
+	{
+		environ[len] = _strdup(newval);
+		if (environ[len] == NULL)
+		{
+			perror("Memory allocation error");
+			for (j = 0; j < len; j++)
+			{
+				free(environ[j]);
+			}
+			free(environ);
+			return (-1);
+		}
+		len++;
+	}
+
+	environ[len] = NULL;
+
+	return (0);
+}
+
+/**
+ * print_env - print the environment variable
+ */
 void print_env(void)
 {
-	char **environ = *(getenviron());
+	int len;
+	char **env = environ;
 
-	while (*environ)
+	if (env == NULL)
 	{
-		int i = 0;
+		return;
+	}
 
-		while ((*environ)[i] != '\0')
-		{
-			i++;
-		}
-		write(STDOUT_FILENO, *environ, i);
+	while (*env != NULL)
+	{
+		len = _strlen(*env);
+		write(STDOUT_FILENO, *env, len);
 		write(STDOUT_FILENO, "\n", 1);
-		environ++;
+		env++;
 	}
 }
 
 /**
- * _setenv - set environment for new value.
- * @variable: name of variable.
- * @value: value of variable.
- * Return: 0 or setallenv if success, -1 if fail
+ * getallenv - to get the environment variable.
+ * Return: pointer to the environ.
  */
-int _setenv(char *variable, char *value)
+char ***getallenv()
 {
-	char ***environroot = getenviron();
-	char **environ = *environroot;
-	int i, j, varz, valz;
-	char *s, *ptr;
+	static char **environ;
 
-	if (variable == NULL || value == NULL)
-		return (0);
-	varz = _strlen(variable);
-	valz = _strlen(value);
-	ptr = malloc(sizeof(char) * (varz + valz + 2));
-	if (ptr == NULL)
-		return (-1);
-	s = ptr;
-	_strcpy(s, variable);
-	s += varz;
-	_strcpy(s++, "=");
-	_strcpy(s, value);
-	s += valz;
-	*s = 0;
-	i = 0;
+	char ***environ_ptr = &environ;
 
-	while (environ[i] != NULL)
-	{
-		s = environ[i];
-		j = 0;
-		while (s[j] == variable[j])
-		{
-			j++;
-			if (variable[j] == 0 && s[j] == '=')
-			{
-				free(environ[i]);
-				environ[i] = ptr;
-				return (0);
-			}
-		}
-		i++;
-	}
-	return (setallenv(*environroot, ptr));
-}
-
-/**
- * _unsetenv - unset environment
- * @name: name of variable to unset
- * Return: 0 if sucess
- */
-int _unsetenv(char *variable)
-{
-	char **environ = *getenviron();
-	int i, j;
-	int check = 0;
-	char *s;
-	char **env;
-
-	if (variable == NULL)
-		return (0);
-
-	i = 0;
-
-	while (environ[i] != NULL)
-	{
-		s = environ[i];
-		j = 0;
-		while (s[j] == variable[j])
-		{
-			j++;
-			if (s[j] == '=' && variable[j] == '\0')
-			{
-				check = 1;
-				break;
-			}
-		}
-		if (check == 1)
-			break;
-		i++;
-	}
-	free(environ[i]);
-	while (environ[i] != NULL)
-	{
-		environ[i] = environ[i + 1];
-		i++;
-	}
-	environ[i] = NULL;
-	env = environ;
-	setallenv(env, NULL);
-	i = 0;
-
-	while (env[i])
-	{
-		free(env[i]);
-		i++;
-	}
-	free(env);
-	return (0);
+	return (environ_ptr);
 }
