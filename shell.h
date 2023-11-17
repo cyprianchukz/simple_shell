@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <stdbool.h>
 #include <errno.h>
+#include <stddef.h>
 
 #define DC_SIZE 1024
 #define MAX_ENV_VARS 100
@@ -18,20 +19,21 @@ extern char **environ;
 char *getline_prompt(char **command, size_t *len);
 void tokenizer(char *command, char *argv[]);
 int execute(char **argv);
+int execute_main(char **argv);
 void exec2(char **argv);
 char *get_path(char *command);
 void cy_builtins(char **argv);
 void print_env(void);
-void set_environment();
-char ***getallenv();
-int setallenv(char **envin, char *newval);
-int add_new_value(char **environ, char *newval);
+char *_getenv(char *variable);
+void setallenv(char **env);
 int _setenv(char *variable, char *value);
 int _unsetenv(char *variable);
+void free_environ_memory(void);
 char *_strtok(char *str, char *delim);
 char *strtok2(char *str, char *delim, int escflags);
 int _getline(char **command_ptr, int fd);
 int _atoi(char *s);
+int _cd(char *argv[]);
 
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);

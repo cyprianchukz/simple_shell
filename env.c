@@ -1,143 +1,191 @@
 #include "shell.h"
 
 /**
- * set_environment - set the environment variables for the shell.
- */
-void set_environment(void)
-{
-	int i;
-	char **env_copy = malloc(sizeof(char *) * (MAX_ENV_VARS + 1));
-
-	if (env_copy == NULL)
-	{
-		perror("Memory allocation error");
-		exit(EXIT_FAILURE);
-	}
-
-	i = 0;
-
-	while (environ[i] != NULL && i < MAX_ENV_VARS)
-	{
-		env_copy[i] = _strdup(environ[i]);
-		if (env_copy[i] == NULL)
-		{
-			perror("Memory allocation error");
-			exit(EXIT_FAILURE);
-		}
-		i++;
-	}
-	env_copy[i] = NULL;
-
-	if (setallenv(env_copy, NULL) == -1)
-	{
-		perror("Error setting environment variables");
-		exit(EXIT_FAILURE);
-	}
-}
-
-/**
- * setallenv - to set the environment variables.
- * @envin: the environment variables.
- * @newval: new value of the env.
- * Return: 0 on success.
- */
-int setallenv(char **envin, char *newval)
-{
-	static char **environ;
-	size_t i, j, len = 0;
-
-	while (envin[len] != NULL)
-	{
-		len++;
-	}
-
-	environ = malloc(sizeof(char *) * (len + 1));
-	if (environ == NULL)
-	{
-		perror("Memory allocation error");
-		return (-1);
-	}
-
-	for (i = 0; i < len; i++)
-	{
-		environ[i] = _strdup(envin[i]);
-		if (environ[i] == NULL)
-		{
-			perror("Memory allocation error");
-			for (j = 0; j < i; j++)
-			{
-				free(environ[j]);
-			}
-			free(environ);
-			return (-1);
-		}
-	}
-	add_new_value(environ, newval);
-	return (0);
-}
-
-/**
- * add_new_value - adds new value to the setallenv.
- * @environ: pointer to the environ.
- * @newval: pointer to the new value.
- * Return: 0 on success, -1 on failure.
- */
-int add_new_value(char **environ, char *newval)
-{
-	size_t j, len = 0;
-
-	if (newval != NULL)
-	{
-		environ[len] = _strdup(newval);
-		if (environ[len] == NULL)
-		{
-			perror("Memory allocation error");
-			for (j = 0; j < len; j++)
-			{
-				free(environ[j]);
-			}
-			free(environ);
-			return (-1);
-		}
-		len++;
-	}
-
-	environ[len] = NULL;
-
-	return (0);
-}
-
-/**
- * print_env - print the environment variable
+ * print_env - function to print the environment variable.
  */
 void print_env(void)
 {
-	int len;
 	char **env = environ;
+	int i;
 
-	if (env == NULL)
+	while (*env)
 	{
-		return;
-	}
+		i = 0;
 
-	while (*env != NULL)
-	{
-		len = _strlen(*env);
-		write(STDOUT_FILENO, *env, len);
+		while ((*env)[i] != '\0')
+		{
+			i++;
+		}
+		write(STDOUT_FILENO, *env, i);
 		write(STDOUT_FILENO, "\n", 1);
 		env++;
 	}
 }
 
 /**
- * getallenv - to get the environment variable.
- * Return: pointer to the environ.
+ * _getenv - get local environment.
+ * @variable: the environment variable.
+ * Return: string of local environment variable if found.
+ * and NULL if not found.
  */
-char ***getallenv()
+char *_getenv(char *variable)
 {
-	static char **environ;
+	char *s, *env_value;
+	int i, j;
 
-	char ***environ_ptr = &environ;
+	i = 0;
 
-	return (environ_ptr);
+	while (environ[i] != NULL)
+	{
+		s = environ[i];
+		j = 0;
+
+		while (s[j] == variable[j])
+		{
+			j++;
+			if (variable[j] == 0 && s[j] == '=')
+			{
+				env_value = _strdup(s + j + 1);
+				if (env_value == NULL)
+				{
+					return (NULL);
+				}
+				return (env_value);
+			}
+		}
+		i++;
+	}
+
+	return (NULL);
+}
+
+/**
+ * _setenv - set new value for the environment variable.
+ * @variable: first argument of setenv variable.
+ * @value: value and second argument of setenv variable.
+ * Return: 0 on success, -1 on failure.
+ */
+int _setenv(char *variable, char *value)
+{
+	int i, j, var_len, val_len;
+	char *s, *ptr;
+
+	if (variable == NULL || value == NULL)
+		return (0);
+
+	var_len = _strlen(variable);
+	val_len = _strlen(value);
+
+	ptr = malloc(sizeof(char) * (var_len + val_len + 2));
+	if (ptr == NULL)
+		return (-1);
+
+	s = ptr;
+	_strcpy(s, variable);
+	s += var_len;
+	_strcpy(s++, "=");
+	_strcpy(s, value);
+	s += val_len;
+	*s = '\0';
+
+	i = 0;
+
+	while (environ[i] != NULL)
+	{
+		s = environ[i];
+		j = 0;
+		while (s[j] == variable[j])
+		{
+			j++;
+			if (variable[j] == '\0' && s[j] == '=')
+			{
+				free(environ[i]);
+				environ[i] = ptr;
+				return (0);
+			}
+		}
+		i++;
+	}
+	free(ptr);
+
+	return (0);
+}
+
+/**
+ * _unsetenv - function to unset the environment variable.
+ * @variable: name of environment variable to unset.
+ * Return: 0 on success.
+ */
+int _unsetenv(char *variable)
+{
+	int i, j, unset_check = 0;
+	char *s, **env;
+
+	if (variable == NULL || environ == NULL)
+		return (0);
+
+	i = 0;
+
+	while (environ[i] != NULL)
+	{
+		s = environ[i];
+		j = 0;
+
+		while (s[j] == variable[j])
+		{
+			j++;
+			if (s[j] == '=' && variable[j] == '\0')
+			{
+				unset_check = 1;
+				break;
+			}
+		}
+		if (unset_check == 1)
+			break;
+		i++;
+	}
+
+	if (environ[i] != NULL)
+	{
+		free(environ[i]);
+
+		while (environ[i] != NULL)
+		{
+			environ[i] = environ[i + 1];
+			i++;
+		}
+		environ[i] = NULL;
+
+		env = environ;
+		setallenv(env);
+		i = 0;
+
+		while (env[i])
+		{
+			free(env[i]);
+			i++;
+		}
+		free(env);
+	}
+	return (0);
+}
+
+/**
+ * setallenv - function to update the entire environment.
+ * @env: new environment to set.
+ * Return: void.
+ */
+void setallenv(char **env)
+{
+	int i = 0;
+	char **temp = environ;
+
+	while (temp[i])
+	{
+		free(temp[i]);
+		i++;
+	}
+	free(temp);
+
+	environ = env;
 }
