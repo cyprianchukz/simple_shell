@@ -7,7 +7,6 @@
 
 void tokenizer(char *command, char *argv[])
 {
-	const int MAX_ARGS = DC_SIZE;
 	char *token;
 	int argc = 0;
 

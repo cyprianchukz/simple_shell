@@ -13,6 +13,8 @@
 
 #define DC_SIZE 1024
 #define MAX_ENV_VARS 100
+#define MAX_COMMANDS 10
+#define MAX_ARGS 100
 
 extern char **environ;
 
@@ -34,6 +36,7 @@ char *strtok2(char *str, char *delim, int escflags);
 int _getline(char **command_ptr, int fd);
 int _atoi(char *s);
 int _cd(char *argv[]);
+void cmd_separator(char *command);
 
 int _strlen(char *s);
 int _strcmp(char *s1, char *s2);

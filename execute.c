@@ -1,6 +1,6 @@
 #include "shell.h"
 /**
- * execute - function to execute the commands.
+ * execute_main - function to execute the commands.
  * @argv: command argument vector.
  * Return: the exit status (WEXITSTATUS).
  */

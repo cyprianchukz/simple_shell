@@ -38,8 +38,7 @@ int main(int argc, char **argv)
 			{
 				tokenizer(command, argv);
 				cy_builtins(argv);
-				if (_strcmp(argv[0], "env") != 0 && _strcmp(argv[0], "setenv") != 0 &&
-				_strcmp(argv[0], "unsetenv") != 0 && _strcmp(argv[0], "cd") != 0)
+				if (_strcmp(argv[0], "env") != 0)
 				{
 					exec2(argv);
 				}
